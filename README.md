@@ -1,5 +1,5 @@
 
-## Neoj4-Datalog-Wrapper
+# Neoj4-Datalog-Wrapper
 
 This is a general purpose wrapper for converting Datalog queries to Neo4J graph database
 
@@ -11,7 +11,7 @@ _Julius, Priority: 1_
 ### Research and Select a Neo4J Driver/Interface
 
 _Ryan, Priority: 1_
-- [Future Link](README.md) - 
+- [Driver/Connectors](https://github.com/mas-dse-rriopell/Neoj4-Datalog-Wrapper/blob/master/Neo4J_Connectors.ipynb) - Current Progress 
 
 ### Analyze Neo4J Data
 
