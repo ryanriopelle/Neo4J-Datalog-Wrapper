@@ -46,4 +46,4 @@ _Michael, Priority: 2_
 ### Links to Other Groups/Resources
 
 _Introduction_
-- [Future Link](README.md) -  
+- [Gremlin: Basic Graph Traversals](https://github.com/tinkerpop/gremlin/wiki/Basic-Graph-Traversals) -  
