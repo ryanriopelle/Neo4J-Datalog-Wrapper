@@ -36,10 +36,6 @@ _Ryan, Priority: 2_
 _Ryan, Priority: 2_
 - [Future Link](README.md) - 
 
-### Create Function parseDatalog
-_Ryan, Priority: 2_
-- [Future Link](README.md) - 
-
 ### Create Function querySource
 _Ryan, Priority: 2_
 - [Future Link](README.md) - 
