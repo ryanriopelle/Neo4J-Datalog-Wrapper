@@ -16,7 +16,7 @@ _Ryan, Priority: 1_
 ### Analyze Neo4J Data
 
 _Ryan/Michael, Priority: 2_ 
-- [Future link to Notebook](README.md) - Demonstrating the iris dataset with perceptron algorithm in sklearn ml kit
+- [Future link to Notebook](README.md) - 
 
 ### Create Queries to Build Relational View of Data 
 
