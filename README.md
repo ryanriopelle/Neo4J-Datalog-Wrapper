@@ -26,18 +26,19 @@ _Ryan, Priority: 2_
 ### Create Relational Schema of Data
 
 _Ryan, Priority: 2_
-- [Future Link](README.md) -  
+- [Future Link](README.md) - 
+- [Representing Graph using Relational Database](http://stackoverflow.com/questions/2968893/representing-graph-using-relational-database) - Stackoverflow
 
 ### Create 3-4 Datalog Test Queries
-_Ryan, Priority: 2_
+_Julius, Priority: 2_
 - [Future Link](README.md) - 
 
 ### Create Function parseDatalog
-_Ryan, Priority: 2_
+_Julius, Priority: 2_
 - [Future Link](README.md) - 
 
 ### Create Function querySource
-_Ryan, Priority: 2_
+_Michael/others, Priority: 2_
 - [Future Link](README.md) - 
 
 ---
