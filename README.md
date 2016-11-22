@@ -38,7 +38,7 @@ _Julius, Priority: 2_
 - [Future Link](README.md) - 
 
 ### Create Function querySource
-_Michael/others, Priority: 2_
+_Michael, Priority: 2_
 - [Future Link](README.md) - 
 
 ---
