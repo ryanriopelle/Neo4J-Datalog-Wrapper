@@ -1,31 +1,35 @@
-from neo4j.v1 import GraphDatabase, basic_auth
 
 
+# from neo4j.v1 import GraphDatabase, basic_auth
 # driver = GraphDatabase.driver("bolt://54.85.112.231:7687", auth=basic_auth("neo4j", "LEbKqX3q"))
 # session = driver.session()
 #
-# result = session.run("Match (a:Actor) Return distinct a.Type, a.Name")
-#
-# type result
-#
+# result = session.run("Match (n:Country)-[a]-(b) Return distinct n")
 # for record in result:
-#     print record, record[0], record[1]
+#     print record
 # session.close()
 
 
-#Py2Neo Makes It Easier Run Queries and Place Directly in Dataframe
+
+
 from py2neo import authenticate, Graph
 from pandas import DataFrame
 
-# set up authentication parameters
-authenticate("54.85.112.231:7473", "neo4j", "LEbKqX3q")
-
-# connect to authenticated graph database
-graph = Graph('https://54.85.112.231:7473/browser/')
-print graph.dbms.database_name
-print graph.dbms.keys()
-print graph.match.im_class
+#Sets up connection to Neo4J
+authenticate("54.85.112.231:7474", "neo4j", "LEbKqX3q")
+graph = Graph("bolt://54.85.112.231/db/data/")
 
 
-rl_Participants_i3_i4 = DataFrame(graph.data("Match (a:Actor) Return distinct a.Type, a.Name"))
-print rl_Participants_i3_i4
+#Relational Tables For Schema A
+Actor = DataFrame(graph.data("Match (a:Actor) Return distinct ID(a) as id, a.Type as ptype, a.Name as pname, a.AliasList as AliasList"))
+From = DataFrame(graph.data("MATCH (a:Actor)-[:From]-(c:Country) RETURN ID(a) as id,c.Name as country"))
+Affiliation = DataFrame(graph.data("MATCH (a:Actor)-[r:Affiliation]-(o:Organization) RETURN ID(a) as id,o.Name as org, r.beginDate as start, r.endDate as end limit 1000"))
+
+#Relational Tables For Schema B
+
+AgentName = DataFrame(graph.data("Match (a:AgentName) Return ID(a) as id, a.Name as pname"))
+AgentType = DataFrame(graph.data("Match (a_n:AgentName)-[:AgentType]-(a_t:AgentType) Return ID(a_n) as id, a_t.Name as ptype"))
+Aliases = DataFrame(graph.data("Match (a_n:AgentName)-[:AgentAlias]-(a:Aliases) Return ID(a_n) as id, a.AliasList as alias"))
+AgentSector = DataFrame(graph.data("Match (a:AgentName)-[:Sector]-(s:Sector) Return ID(a) as id, ID(s) as sector_id"))
+SectorName = DataFrame(graph.data("Match (s:Sector) Return ID(s) as sector_id, s.Name as name"))
+SectorIs_A = DataFrame(graph.data("MATCH p=(s1:Sector)-[:`is-a`]->(s2:Sector) RETURN ID(s1) as sector_id, ID(s2) as sector_id2 LIMIT 25"))
