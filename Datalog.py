@@ -140,7 +140,7 @@ def inspect(query):
 
 query = [
         # 'ans(L, A) :- group({X}, {Y}, p(X,Y,Z), L), count(L, A)',
-        # 'Q(y):-test(x,y,z), blah(x,b,c)',
+        'Q(y):-test(x,y,z), blah(x,b,c)',
         #  "Q1(y, z):-test(x,y,z), blah(x,'some movie',c)",
          "Q2(y):-test(x, y, '20'), blah(x,'some movie',c), y > 10"
          ]
