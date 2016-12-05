@@ -19,10 +19,18 @@ class DatalogBase(object):
         attribs = [x.strip() for x in r[len(self.name)+1:-1].split(',')]
 
         # set attributes
-        for a in attribs:
-            # add attribute and it's index
-            self.attributes[a] = DatalogAttribute(a,attribs.index(a))
-            self.getList.append(a)
+        # for a in attribs:
+        #     # add attribute and it's index
+        #     self.attributes[a] = DatalogAttribute(a,attribs.index(a))
+        #     self.getList.append(a)
+
+        for i in range(0, len(attribs)):
+            # ignore columns that are not projected
+            if attribs[i].strip() == '_' : continue
+
+            self.attributes[attribs[i]] = DatalogAttribute(attribs[i], i)
+
+            self.getList.append(attribs[i])
 
 class DatalogAttribute(DatalogBase):
 
@@ -60,11 +68,18 @@ class Datalog(DatalogBase):
         name: A string representing the customer's name.
         balance: A float tracking the current balance of the customer's account.
     """
+    # group by columns
+    gc = list()
+    ag = list()
 
 
     def __init__(self, datalogQuery):
 
         self.relations = list()
+        self.groupByColumns = list()
+        self.aggregations = list()
+        self.orderBy = None
+        self.limit = None
 
         # get head and body of datalog query
         self.head, self.body = datalogQuery.split(':-', 2)
@@ -75,9 +90,91 @@ class Datalog(DatalogBase):
         # set attributes and getlist properties for head/projection
         self.__parse__(self.datalog)
 
-        # body should just be a list of relations and attributes
+        # parse groupBy clause if it exists and return body without groupby clause
+        remaining = self.__parse_groupBy__(self.body)
+
+        # parse order by
+        remaining = self.__parse_orderBy__(remaining)
+
+        # parse limit
+        remaining = self.__parse_limit__(remaining)
+
+        # parse relations
+        self.__parse_relations__(remaining)
+
+    def __parse_limit__(self, body):
+        #  this function extracts the limit clause
+
+        px = '(LIMIT[(]\d+?[)])'
+
+        o = [o.strip() for o in re.findall(px, body)]
+
+        if len(o) > 0:
+            body = body.replace(o[0], '')
+            o = o[0]
+            inner = o[o.find('(') + 1:-1]
+
+            self.limit =  int(inner)
+
+        return body
+
+    def __parse_orderBy__(self, body):
+        # extract order by clause
+        px = '(SORT_BY[(].+?[)])'
+
+        o = [o.strip() for o in re.findall(px, body)]
+
+        if len(o) > 0:
+
+            body = body.replace(o[0],'')
+            o = o[0]
+            inner = o[o.find('(') + 1:-1]
+
+            parts = [x.strip() for x in inner.split(',')]
+            self.orderBy = 'ORDER BY {0} {1}'.format(parts[0], parts[1][1:-1])
+
+        return body
+
+    def __parse_groupBy__(self, body):
+        # parse and remove group by as it contains nested ()
+        gx = '(GROUP_BY[(].+?[)][)])'
+        self.groupBy = re.findall(gx, body)
+
+        rel_pred = body
+        # extract non-relational components
+        for x in re.findall(gx, body):
+            rel_pred = rel_pred.replace(x, '')
+
+        # parse group by components
+        for g in self.groupBy:
+            # get inner contents of groupby()
+            inner = g[g.find('(') + 1:-1]
+
+            # get group by columns
+            gc = re.findall('\[.+?\]', inner)[0]
+
+            inner = inner.replace(gc, '').strip()
+
+            # parse group columns into a list
+            gc = [c.strip() for c in gc[1:-1].split(',')]
+
+            # get aggregation variables
+            ag = [a.strip() for a in inner.split(',') if a.strip() <> '']
+
+            ag = ['{0} AS {1}'.format(a.split('=')[1].strip(), a.split('=')[0].strip()) for a in ag]
+
+            self.groupByColumns = gc
+            self.aggregations = ag
+
+            pass
+        return rel_pred
+
+
+
+    def __parse_relations__(self, rel_pred):
+        # body should just be a list of relations and predicates without any additional clauses
         px = '(\w+[(].+?[)])'
-        for r in re.findall(px, self.body):
+        for r in re.findall(px, rel_pred):
             # create relation object for each relation found in body
             self.relations.append(DatalogRelation(r))
 
@@ -127,6 +224,7 @@ def inspect(query):
     print 'head:',d.head
     print 'name:',d.name
     print 'projection:', d.getList
+
     print 'Join keys:',d.joinKeys
     for x in d.relations:
         print x.name
@@ -136,13 +234,20 @@ def inspect(query):
                 x.attributes[a].index, '\t',\
                 x.attributes[a].isJoinPart, '\t',\
                 x.predicate[x.attributes[a].index] if x.attributes[a].index in x.predicate else ''
-    print '\n'
+    print 'group by:', d.groupBy
+    print 'grouping columns:', d.groupByColumns
+    print 'aggregations:', d.aggregations
+    print 'order by:', d.orderBy
+    # this property is an int
+    print 'limit:', d.limit
+print '\n'
 
 query = [
         # 'ans(L, A) :- group({X}, {Y}, p(X,Y,Z), L), count(L, A)',
-        # 'Q(y):-test(x,y,z), blah(x,b,c)',
+        # 'Q(y):-test(x,y,_,_), blah(x,b, _)',
+        'A(a, b , d) :- rel(a, b, c, _), a>1, GROUP_BY([a, b], d = COUNT(c)), d < 100, SORT_BY(b, "DESC"), LIMIT(25)'
         #  "Q1(y, z):-test(x,y,z), blah(x,'some movie',c)",
-         "Q2(y):-test(x, y, '20'), blah(x,'some movie',c), y > 10"
+        #  "Q2(y):-test(x, y, '20'), blah(x,'some movie',c), y > 10"
          ]
 
 for q in query:
