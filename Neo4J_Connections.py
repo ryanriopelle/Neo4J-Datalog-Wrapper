@@ -1,4 +1,5 @@
-
+from py2neo import authenticate, Graph
+from pandas import *
 
 # from neo4j.v1 import GraphDatabase, basic_auth
 # driver = GraphDatabase.driver("bolt://54.85.112.231:7687", auth=basic_auth("neo4j", "LEbKqX3q"))
@@ -10,10 +11,6 @@
 # session.close()
 
 
-
-
-from py2neo import authenticate, Graph
-from pandas import DataFrame
 
 #Sets up connection to Neo4J
 authenticate("54.85.112.231:7474", "neo4j", "LEbKqX3q")
@@ -33,6 +30,7 @@ Aliases = DataFrame(graph.data("Match (a_n:AgentName)-[:AgentAlias]-(a:Aliases) 
 AgentSector = DataFrame(graph.data("Match (a:AgentName)-[:Sector]-(s:Sector) Return ID(a) as id, ID(s) as sector_id"))
 SectorName = DataFrame(graph.data("Match (s:Sector) Return ID(s) as sector_id, s.Name as name"))
 SectorIs_A = DataFrame(graph.data("MATCH p=(s1:Sector)-[:`is-a`]->(s2:Sector) RETURN ID(s1) as sector_id, ID(s2) as sector_id2 LIMIT 25"))
+
 
 
 #Send all dataframes to a compressed HDF store in memory
