@@ -14,28 +14,37 @@ AgentSector = pandas.read_hdf("Neo4JRelational.hdf", "AgentSector")
 SectorName = pandas.read_hdf("Neo4JRelational.hdf", "SectorName")
 SectorIs_A = pandas.read_hdf("Neo4JRelational.hdf", "SectorIs_A")
 
-#Print schema for relational database
-print "Actor:", Actor.columns.values, "\n"\
-"From:", From.columns.values, "\n" \
-"Affiliation:", Affiliation.columns.values, "\n"\
-"AgentName:", AgentName.columns.values, "\n" \
-"AgentType:", AgentType.columns.values , "\n" \
-"Aliases:", Aliases.columns.values , "\n" \
-"AgentSector:", AgentSector.columns.values , "\n" \
-"SectorName:", SectorName.columns.values , "\n" \
-"SectorIs_A:", SectorIs_A.columns.values, "\n" \
+# #Print schema for relational database
+# print "Actor:", Actor.columns.values, "\n"\
+# "From:", From.columns.values, "\n" \
+# "Affiliation:", Affiliation.columns.values, "\n"\
+# "AgentName:", AgentName.columns.values, "\n" \
+# "AgentType:", AgentType.columns.values , "\n" \
+# "Aliases:", Aliases.columns.values , "\n" \
+# "AgentSector:", AgentSector.columns.values , "\n" \
+# "SectorName:", SectorName.columns.values , "\n" \
+# "SectorIs_A:", SectorIs_A.columns.values, "\n" \
+#
+#
+#
+# print Actor.dtypes,"\n"
+# print From.dtypes,"\n"
+# print Affiliation.dtypes,"\n"
+# print AgentName.dtypes,"\n"
+# print AgentType.dtypes,"\n"
+# print Aliases.dtypes,"\n"
+# print AgentSector.dtypes,"\n"
+# print SectorName.dtypes,"\n"
+# print SectorIs_A.dtypes
 
 
 
-print Actor.dtypes,"\n"
-print From.dtypes,"\n"
-print Affiliation.dtypes,"\n"
-print AgentName.dtypes,"\n"
-print AgentType.dtypes,"\n"
-print Aliases.dtypes,"\n"
-print AgentSector.dtypes,"\n"
-print SectorName.dtypes,"\n"
-print SectorIs_A.dtypes
+# Actor['pname'] = Actor['pname'].astype('str')
+# Actor['ptype'] = Actor['ptype'].astype('str')
+
+
+
+
 
 # for q in datalog_queries:
 #     inspect(q)

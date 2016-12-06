@@ -11,7 +11,6 @@ from pandas import *
 # session.close()
 
 
-
 #Sets up connection to Neo4J
 authenticate("54.85.112.231:7474", "neo4j", "LEbKqX3q")
 graph = Graph("bolt://54.85.112.231/db/data/")
@@ -31,6 +30,21 @@ AgentSector = DataFrame(graph.data("Match (a:AgentName)-[:Sector]-(s:Sector) Ret
 SectorName = DataFrame(graph.data("Match (s:Sector) Return ID(s) as sector_id, s.Name as name"))
 SectorIs_A = DataFrame(graph.data("MATCH p=(s1:Sector)-[:`is-a`]->(s2:Sector) RETURN ID(s1) as sector_id, ID(s2) as sector_id2 LIMIT 25"))
 
+
+#Convert String Types to Strings
+#Relational Tables For Schema A
+Actor['pname'] = Actor['pname'].str.split(',')
+Actor['ptype'] = Actor['ptype'].str.split(',')
+From['country'] = From['country'].str.split(',')
+Affiliation['end'] = Affiliation['end'].str.split(',')
+Affiliation['org'] = Affiliation['org'].str.split(',')
+Affiliation['start'] = Affiliation['start'].str.split(',')
+
+#Relational Tables For Schema B
+AgentName['pname'] = AgentName['pname'].str.split(',')
+AgentType['ptype'] = AgentType['ptype'].str.split(',')
+Aliases['alias'] = Aliases['alias'].str.split(',')
+SectorIs_A['name'] = SectorIs_A['name'].str.split(',')
 
 
 #Send all dataframes to a compressed HDF store in memory
