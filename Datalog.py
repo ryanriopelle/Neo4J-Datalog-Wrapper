@@ -249,6 +249,6 @@ print '\n'
 #         #  "Q1(y, z):-test(x,y,z), blah(x,'some movie',c)",
 #         #  "Q2(y):-test(x, y, '20'), blah(x,'some movie',c), y > 10"
 #          ]
-#
+
 # for q in query:
 #     inspect(q)
