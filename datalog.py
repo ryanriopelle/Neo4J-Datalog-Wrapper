@@ -183,9 +183,14 @@ class Datalog(DatalogBase):
         predicates = list()
 
         for s in self.relations:
+            # get functional predicates that don't use variable assignment
+            alt_pred = re.findall('([A-Z0-9]+[(].+?,.+?[)])', rel_pred)
 
-            # get predicates from body
-            p = [x.strip() for x in re.sub(px, '', rel_pred).split(',') if x.strip() <> '']
+            # remove alt_pred from predicate string
+            p = re.sub('([A-Z0-9]+[(].+?,.+?[)])', '',rel_pred)
+
+            # get predicates from body by removing relations
+            p = [x.strip() for x in re.sub(px, '', p).split(',')  if x.strip() <> '']
 
             # create predicate dictionary
             s.predicate = dict()
@@ -193,15 +198,21 @@ class Datalog(DatalogBase):
 
 
             if len(p) > 0:
-                predicates = [x.strip() for x in p if x.strip() <> '']
-
-
+                predicates_all = [x.strip() for x in p if x.strip() <> '']
+                predicates = [x for x in predicates_all if re.split('\W+',x)[0].strip() in s.attributes]
                 # only keep predicates for current relation
-                s.predicateToList = [x for x in predicates if re.split('\W+',x)[0].strip() in s.attributes]
+                s.predicateToList = predicates + alt_pred
+
 
                 # populate predicate dictionary
-                for x in s.predicateToList:
+                for x in predicates:
                     s.predicate[s.attributes[re.split('\W+',x)[0]].index] = x
+
+                # add alternate predicates to dictionary
+                for pred in alt_pred:
+                    var = pred[pred.find('(') + 1:pred.find(',')].strip()
+                    val = pred.replace(pred[pred.find('(') + 1:pred.find(',')+ 1], '').replace('( ', '(')
+                    s.predicate[s.attributes[var].index] = val
 
                 #  check for inline equality predicates and add to predicate dictionary
                 for x in s.attributes:
@@ -217,7 +228,7 @@ class Datalog(DatalogBase):
             attribs = reduce((lambda x, y: x.getList + y.getList),self.relations)
         else:
             attribs = self.relations[0].getList
-        self.predicateToList = [x for x in predicates if not re.split('\W+', x)[0].strip() in attribs]
+        self.predicateToList = [x for x in predicates_all if not re.split('\W+', x)[0].strip() in attribs]
         pass
 
 
