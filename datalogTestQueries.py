@@ -14,7 +14,7 @@ some_id ='some_id'
 query0 = """
 Participants(_, id_to_sid(sid), _, ptype, %s, _):-
 Actor( sid, ptype, _, aliasList ),
-contains( aliasList, %s )
+CONTAINS( aliasList, %s )
 """ %(some_name, some_name)
 
 
@@ -22,7 +22,7 @@ query1 = """
 Participants(_, id_to_sid(sid), _, ptype, %s, _):-
 Aliases( sid, aliasList ),
 AgentType( sid, ptype ),
-contains( aliasList, %s )
+CONTAINS( aliasList, %s )
 """ %(some_name, some_name)
 
 query2 = """
@@ -48,7 +48,7 @@ query5 = """
 ParticipantDetails(_, _, org, country, %s, _):-
 From( sid, country ),
 Affiliation( sid, org, _, _ ),
-Actor( sid, _, _, aliasList ), contains( aliasList, %s )
+Actor( sid, _, _, aliasList ), CONTAINS( aliasList, %s )
 """ %(some_name, some_name)
 
 
