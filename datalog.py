@@ -181,7 +181,8 @@ class Datalog(DatalogBase):
         # find common attributes and add to list of join keys
         self.joinKeys = list(set([x for x in a if a.count(x) > 1]))
 
-        # px = '(\w+[(].+?[)])'
+        predicates = list()
+
         for s in self.relations:
 
             # get predicates from body
@@ -198,8 +199,6 @@ class Datalog(DatalogBase):
 
                 # only keep predicates for current relation
                 s.predicateToList = [x for x in predicates if re.split('\W+',x)[0].strip() in s.attributes]
-
-
 
                 # populate predicate dictionary
                 for x in s.predicateToList:
@@ -255,7 +254,7 @@ query = [
         # 'Q(y):-test(x,y,_,_), blah(x,b, _)',
         # 'A(a, b , d) :- rel(a, b, c, _), a > 1, GROUP_BY([a, b], d = COUNT(c)), d < 100, SORT_BY(b, "DESC"), f = FUN(d), LIMIT(25)'
         #  "Q1(y, z):-test(x,y,z), blah(x,'some movie',c)",
-         "Q2(y):-test(x, y, '20'), blah(x,'some movie',c), y > 10"
+        #  "Q2(y):-test(x, y, '20'), blah(x,'some movie',c), y > 10"
          ]
 
 for q in query:
