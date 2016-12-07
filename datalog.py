@@ -75,6 +75,7 @@ class Datalog(DatalogBase):
         self.orderBy = None
         self.limit = None
         self.predicateToList = list()
+        self.distinct = False
 
         # get head and body of datalog query
         self.head, self.body = datalogQuery.split(':-', 2)
@@ -88,6 +89,9 @@ class Datalog(DatalogBase):
         # parse groupBy clause if it exists and return body without groupby clause
         remaining = self.__parse_groupBy__(self.body)
 
+        # parse limit
+        remaining = self.__parse_distinct__(remaining)
+
         # parse order by
         remaining = self.__parse_orderBy__(remaining)
 
@@ -96,6 +100,17 @@ class Datalog(DatalogBase):
 
         # parse relations
         self.__parse_relations__(remaining)
+
+    def __parse_distinct__(self, body):
+
+        px = '(DISTINCT)'
+
+        o = re.findall(px, body)
+
+        if len(o) > 0:
+            self.distinct = True
+
+        return body
 
     def __parse_limit__(self, body):
         #  this function extracts the limit clause
@@ -257,5 +272,6 @@ def inspect(query):
     print 'order by:', d.orderBy
     # this property is an int
     print 'limit:', d.limit
-print '\n'
+    print 'distinct:', d.distinct
+    print '\n'
 
