@@ -1,9 +1,8 @@
 from datalog import *
 from datalogTestQueries import *
 import pandas
-from conversionFunctions import *
 
-
+#Reads data from the compressed HDF File
 Actor = pandas.read_hdf("Neo4JRelational.hdf", "Actor")
 From = pandas.read_hdf("Neo4JRelational.hdf", "From")
 Affiliation = pandas.read_hdf("Neo4JRelational.hdf", "Affiliation")
@@ -15,95 +14,107 @@ SectorName = pandas.read_hdf("Neo4JRelational.hdf", "SectorName")
 SectorIs_A = pandas.read_hdf("Neo4JRelational.hdf", "SectorIs_A")
 
 
-dataframes_names = ['Actor', 'From', 'Affiliation', 'AgentName', 'AgentType', \
-              'Aliases', 'AgentSector', 'SectorName', 'SectorIs_A']
+#Joines Pandas in to 2 Major Tables, Schema A & Schema B
+Schema_a1 = pandas.merge(Actor, From ,on='id')
+Schema_A = pandas.merge(Schema_a1, Affiliation, on='id')
+Schema_b1 = pandas.merge(AgentName, AgentType ,on='id')
+Schema_b2 = pandas.merge(Aliases, Schema_b1, on='id' )
+Schema_b3 = pandas.merge(AgentSector, Schema_b2, on='id' )
+Schema_b4 = pandas.merge(SectorName, Schema_b3, on='sector_id' )
+Schema_B = pandas.merge(SectorIs_A, Schema_b4, on='sector_id' )
 
-dataframes=[Actor, From, Affiliation, AgentName, AgentType, \
-              Aliases, AgentSector, SectorName, SectorIs_A]
 
 
-def create_df_list(datalog_query):
+def return_join_tables_cols(query):
+    #This function returns the columns that need to be retrieved from either A or B of neo4J schema
+    d = Datalog(query)
+    columns = []
+    tables = []
 
-    #Creates unordered list of dataframes to be joined from Neo4J relational DB
-    df_list=[]
-    d = Datalog(datalog_query)
+    #loops through tables and attributes and pulls data from non join key columns
     for x in d.relations:
         for a in x.attributes:
-            if x.attributes[a].isJoinPart == True:
-                # print  x.name , x.attributes[a].name , x.attributes[a].index
-                df_list.append([x.name , (x.attributes[a].name , x.attributes[a].index)])
-    return df_list
+            # if x.attributes[a].isJoinPart == False:
+            columns.append(x.attributes[a].name)
+            tables.append(x.name)
+
+    #gets unique values for columns and tables
+    columns = list(set(columns))
+    tables = list(set(tables))
+
+    #Returns non join columns and list of tables that need to be returned in the query
+    return tables, columns
 
 
-def sort_frames(df_list):
+#
+def return_schema_A_or_B_dfs(tables, columns):
+    #function returns query values in unordered dataframe
 
-    #sorts list for further processing joins
-    sorted_df_list = sorted(df_list, key=lambda row: row[1][0], reverse=True)
-    return sorted_df_list
+    #Gets available tables and columns list from schema A
+    schemaA_tables = ['Actor', 'From', 'Affiliation']
+    schemaA_col = Schema_A.columns
 
-print datalog_queries[3]
+    #Gets available tables and columns list from schema B
+    schemaB_tables = ['AgentName', 'AgentType', 'liases', 'AgentSector', 'SectorName', 'SectorIs_A']
+    schemaB_col = Schema_B.columns
 
-#Pulls the names of the dataframes that need to be sorted with join key info
-df_names =  create_df_list(datalog_queries[3])
+    # Checks how many tables intersect
+    tableA_intersect = [val for val in return_tables if val in schemaA_tables]
+    tableB_intersect = [val for val in return_tables if val in schemaB_tables]
 
-#Sorts the list of dataframes by the join key
-names_sorted_by_key = sort_frames(df_names)
+    # Checks how many columns intersect
+    colA_intersect = [val for val in return_cols if val in schemaA_col]
+    colB_intersect = [val for val in return_cols if val in schemaB_col]
 
-#print names_sorted_by_key
+    #Decides which schema and creates pandas dataframe of values that need to be returned
+    if len(tableA_intersect) > len(tableB_intersect):
+        return_df_unordered = Schema_A[colA_intersect]
+        print "Data is in Neo4J Schema A"
+        return return_df_unordered
 
-#Sets up data structure to hold dataframes with key info
-df_list_with_keys = names_sorted_by_key
-
-for df_names in df_list_with_keys:
-    df_names[0] = vars().get(df_names[0])
-
-
-# print names_sorted_by_key[0]
-i=0
-
-for keys in df_list_with_keys:
-
-    key = df_list_with_keys[i][1][0]
-    print "for key", key
-    if i == 0:
-        pass
+    elif len(tableA_intersect) < len(tableB_intersect):
+        return_df_unordered = Schema_B[colB_intersect]
+        print "Data is in Neo4J Schema B"
+        return return_df_unordered
     else:
-        if df_list_with_keys[i][1][0] == df_list_with_keys[i-1][1][0]:
-            joined_table = pandas.merge(df_list_with_keys[i][0], df_list_with_keys[i-1][0],\
-                                        on=key)
-    i+=1
-
-print joined_table
+        print "Columns being passed are not correct"
 
 
-# joined_check = pandas.merge(names_sorted_by_key[0[0]],AgentName,on='id')
+def order_to_global_schema(unorderd_return_df):
 
+    #The following three lines describe the global schema
+    ParticipantsGlobalSchema = ['_0', 'id', '_2', 'ptype', 'pname', 'sector_id']
+    ParticipantDetailGlobalSchema = ['_0', 'Category', 'org', 'country', 'name', '_5']
+    Events = ['Date']
 
-# for df in dataframes:
-#     print df.label
-    # for df_name in sorted_df_list:
-    #
-    #     print vars([df])
-    #     print locals(df)
-    #         if str(df_name[0])==df:
-    #             print df_name[0]
-    #             df_name=df
-    #         else:
-    #             pass
+    #Set empty dataframes
+    Participants = pandas.DataFrame(columns=ParticipantsGlobalSchema)
+    ParticipantDetail = pandas.DataFrame(columns=ParticipantDetailGlobalSchema)
+    Events = pandas.DataFrame(columns=Events)
 
-# print sort_frames(create_df_list(datalog_queries[1]))
+    #checks if the input df has columns in Participants Global Schema Return Table
+    if len([val for val in unorderd_return_df.columns if val in ParticipantsGlobalSchema]) > 0:
+        Participants = unorderd_return_df.reindex(columns=list(ParticipantsGlobalSchema))
+    else:
+        pass
 
-# from DatalogTestQueries import *
-# for q in datalog_queries:
-#     inspect(q)
+    # checks if the input df has columns in ParticipantDetail Global Schema Return Table
+    if len([val for val in unorderd_return_df.columns if val in ParticipantDetailGlobalSchema]) > 0:
+        ParticipantDetail = unorderd_return_df.reindex(columns=list(ParticipantDetailGlobalSchema))
+    else:
+        pass
 
-
+    return Participants,ParticipantDetail
 
 
 
-#reduce(lambda left,right: pandas.merge(AgentType[0],AgentName[0],on='sid'), sorted_df_list)
+#This is a test of the code above to show how it works!!!
 
+return_tables, return_cols  = return_join_tables_cols(query8)
+unorderd_return_df = return_schema_A_or_B_dfs(return_tables, return_cols)
+Participants, ParticipantDetail = order_to_global_schema(unorderd_return_df)
 
-# # Joins multiple dataframes
-# df_final = reduce(lambda left,right: pd.merge(left,right,on='name'), sorted_df_list)
-
+print query8, "\n"
+print "Tables:", return_tables, "Columns:", return_cols, "\n"
+print unorderd_return_df.columns, "\n"
+print Participants, ParticipantDetail
