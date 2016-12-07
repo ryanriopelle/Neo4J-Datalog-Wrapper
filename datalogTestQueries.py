@@ -33,8 +33,8 @@ Actor( sid, %s, pname, _ )
 
 query3 = """
 Participants(_, id_to_sid(sid), _, %s, pname, _):-
-AgentType( sid, group),
-AgentName( sid, pname )
+AgentType( id, group),
+AgentName( id, pname )
 """ %group
 
 query4 = """

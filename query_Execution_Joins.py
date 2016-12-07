@@ -1,6 +1,7 @@
-from Datalog import *
-from DatalogTestQueries import *
+from datalog import *
+from datalogTestQueries import *
 import pandas
+from conversionFunctions import *
 
 
 Actor = pandas.read_hdf("Neo4JRelational.hdf", "Actor")
@@ -40,9 +41,42 @@ def sort_frames(df_list):
     sorted_df_list = sorted(df_list, key=lambda row: row[1][0], reverse=True)
     return sorted_df_list
 
+print datalog_queries[3]
 
-df_list =  create_df_list(datalog_queries[3])
-sorted_df_list = sort_frames(df_list)
+#Pulls the names of the dataframes that need to be sorted with join key info
+df_names =  create_df_list(datalog_queries[3])
+
+#Sorts the list of dataframes by the join key
+names_sorted_by_key = sort_frames(df_names)
+
+#print names_sorted_by_key
+
+#Sets up data structure to hold dataframes with key info
+df_list_with_keys = names_sorted_by_key
+
+for df_names in df_list_with_keys:
+    df_names[0] = vars().get(df_names[0])
+
+
+# print names_sorted_by_key[0]
+i=0
+
+for keys in df_list_with_keys:
+
+    key = df_list_with_keys[i][1][0]
+    print "for key", key
+    if i == 0:
+        pass
+    else:
+        if df_list_with_keys[i][1][0] == df_list_with_keys[i-1][1][0]:
+            joined_table = pandas.merge(df_list_with_keys[i][0], df_list_with_keys[i-1][0],\
+                                        on=key)
+    i+=1
+
+print joined_table
+
+
+# joined_check = pandas.merge(names_sorted_by_key[0[0]],AgentName,on='id')
 
 
 # for df in dataframes:
@@ -57,14 +91,12 @@ sorted_df_list = sort_frames(df_list)
     #         else:
     #             pass
 
-print sort_frames(create_df_list(datalog_queries[1]))
+# print sort_frames(create_df_list(datalog_queries[1]))
 
 # from DatalogTestQueries import *
 # for q in datalog_queries:
 #     inspect(q)
 
-
-joined_check = pandas.merge(AgentType,AgentName,on='id')
 
 
 

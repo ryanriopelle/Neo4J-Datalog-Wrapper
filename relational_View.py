@@ -1,5 +1,5 @@
-from Datalog import *
-from DatalogTestQueries import *
+from datalog import *
+from datalogTestQueries import *
 import py2neo
 import pandas
 
