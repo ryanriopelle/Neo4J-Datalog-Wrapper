@@ -18,12 +18,6 @@ class DatalogBase(object):
         # this relies on the name of the class already being set
         attribs = [x.strip() for x in r[len(self.name)+1:-1].split(',')]
 
-        # set attributes
-        # for a in attribs:
-        #     # add attribute and it's index
-        #     self.attributes[a] = DatalogAttribute(a,attribs.index(a))
-        #     self.getList.append(a)
-
         for i in range(0, len(attribs)):
             # ignore columns that are not projected
             if attribs[i].strip() == '_' : continue
@@ -47,6 +41,7 @@ class DatalogRelation(DatalogBase):
         self.attributes = list()
         self.getList = list()
         self.predicate = None
+        self.predicateToList = list()
 
         # set name & datalog property
         super(DatalogRelation, self).__init__(query.split('(')[0], query)
@@ -80,6 +75,7 @@ class Datalog(DatalogBase):
         self.aggregations = list()
         self.orderBy = None
         self.limit = None
+        self.predicateToList = list()
 
         # get head and body of datalog query
         self.head, self.body = datalogQuery.split(':-', 2)
@@ -173,10 +169,11 @@ class Datalog(DatalogBase):
 
     def __parse_relations__(self, rel_pred):
         # body should just be a list of relations and predicates without any additional clauses
-        px = '(\w+[(].+?[)])'
+        px = '([a-z0-9]+[(].+?[)])'
         for r in re.findall(px, rel_pred):
             # create relation object for each relation found in body
             self.relations.append(DatalogRelation(r))
+            # rel_pred = rel_pred.replace(r, '')
 
         # find all join attributes in all relations
         a = [a for sub in self.relations for a in sub.attributes]
@@ -184,22 +181,25 @@ class Datalog(DatalogBase):
         # find common attributes and add to list of join keys
         self.joinKeys = list(set([x for x in a if a.count(x) > 1]))
 
-        px = '(\w+[(].+?[)])'
+        # px = '(\w+[(].+?[)])'
         for s in self.relations:
 
             # get predicates from body
-            p = [x.strip() for x in re.sub(px, '', self.body).split(',') if x.strip() <> '']
+            p = [x.strip() for x in re.sub(px, '', rel_pred).split(',') if x.strip() <> '']
 
             # create predicate dictionary
             s.predicate = dict()
             s.predicateToList = list()
 
+
             if len(p) > 0:
-                s.predicateToList = [x.strip() for x in re.sub(px, '', self.body).split(',') if x.strip() <> '']
+                predicates = [x.strip() for x in p if x.strip() <> '']
 
 
                 # only keep predicates for current relation
-                s.predicateToList = [x for x in s.predicateToList if re.split('\W+',x)[0] in s.attributes]
+                s.predicateToList = [x for x in predicates if re.split('\W+',x)[0].strip() in s.attributes]
+
+
 
                 # populate predicate dictionary
                 for x in s.predicateToList:
@@ -214,6 +214,13 @@ class Datalog(DatalogBase):
             for x in set(self.joinKeys).intersection(s.getList):
                 # use list of join keys to set join property to true
                 s.attributes[x].isJoinPart = True
+
+        if len(self.relations) > 1:
+            attribs = reduce((lambda x, y: x.getList + y.getList),self.relations)
+        else:
+            attribs = self.relations[0].getList
+        self.predicateToList = [x for x in predicates if not re.split('\W+', x)[0].strip() in attribs]
+        pass
 
 
 
@@ -237,18 +244,19 @@ def inspect(query):
     print 'group by:', d.groupBy
     print 'grouping columns:', d.groupByColumns
     print 'aggregations:', d.aggregations
+    print 'having clause:', d.predicateToList
     print 'order by:', d.orderBy
     # this property is an int
     print 'limit:', d.limit
 print '\n'
 
-# query = [
-#         # 'ans(L, A) :- group({X}, {Y}, p(X,Y,Z), L), count(L, A)',
-#         # 'Q(y):-test(x,y,_,_), blah(x,b, _)',
-#         'A(a, b , d) :- rel(a, b, c, _), a>1, GROUP_BY([a, b], d = COUNT(c)), d < 100, SORT_BY(b, "DESC"), LIMIT(25)'
-#         #  "Q1(y, z):-test(x,y,z), blah(x,'some movie',c)",
-#         #  "Q2(y):-test(x, y, '20'), blah(x,'some movie',c), y > 10"
-#          ]
-#
-# for q in query:
-#     inspect(q)
+query = [
+        # 'ans(L, A) :- group({X}, {Y}, p(X,Y,Z), L), count(L, A)',
+        # 'Q(y):-test(x,y,_,_), blah(x,b, _)',
+        # 'A(a, b , d) :- rel(a, b, c, _), a > 1, GROUP_BY([a, b], d = COUNT(c)), d < 100, SORT_BY(b, "DESC"), f = FUN(d), LIMIT(25)'
+        #  "Q1(y, z):-test(x,y,z), blah(x,'some movie',c)",
+         "Q2(y):-test(x, y, '20'), blah(x,'some movie',c), y > 10"
+         ]
+
+for q in query:
+    inspect(q)
