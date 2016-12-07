@@ -12,14 +12,14 @@ some_id ='some_id'
 
 
 query0 = """
-Participants(_, id_to_sid(sid), _, ptype, %s, _):-
-Actor( sid, ptype, _, aliasList ),
-CONTAINS( aliasList, %s )
+Participants(_, id, _, ptype, %s, _):-
+Actor( id, ptype, _, aliasList ),
+contains( aliasList, %s )
 """ %(some_name, some_name)
 
 
 query1 = """
-Participants(_, id_to_sid(sid), _, ptype, %s, _):-
+Participants(_, id, _, ptype, %s, _):-
 Aliases( sid, aliasList ),
 AgentType( sid, ptype ),
 CONTAINS( aliasList, %s )
@@ -32,7 +32,7 @@ Actor( sid, %s, pname, _ )
 
 
 query3 = """
-Participants(_, id_to_sid(sid), _, %s, pname, _):-
+Participants(_, id, _, %s, pname, _):-
 AgentType( id, group),
 AgentName( id, pname )
 """ %group
@@ -46,10 +46,31 @@ Type( sid_to_id(%s), ptype )
 
 query5 = """
 ParticipantDetails(_, _, org, country, %s, _):-
-From( sid, country ),
-Affiliation( sid, org, _, _ ),
-Actor( sid, _, _, aliasList ), CONTAINS( aliasList, %s )
-""" %(some_name, some_name)
+From( id, country ),
+Affiliation( id, org, _, _ ),
+Actor( id, _, _, aliasList )
+"""
 
+query6 = """
+ParticipantDetails(_, _, org, country, %s, _):-
+From( id, country ),
+Affiliation( id, org, _, _ ),
+Actor( id, _, _, aliasList )
+"""
 
-datalog_queries = [query0, query1, query2, query3, query4, query5]
+query7 = """
+ParticipantDetails(_, _, category, _, 'Some Name', _):-
+AgentName(id, pname),
+AgentType(id, ptype),
+Aliases( id, aliasList )
+"""
+
+query8 = """
+ParticipantDetails(_, _, category, _, 'Some Name', _):-
+AgentName(id, pname),
+AgentType(id, ptype),
+Aliases( id, aliasList ),
+AgentSector( id, sector_id ),
+SectorName( sector_id, sector_name1 )"""
+
+datalog_queries = [query0, query1, query2, query3, query4, query5, query6, query7, query8]
