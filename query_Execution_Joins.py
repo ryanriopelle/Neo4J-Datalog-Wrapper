@@ -42,9 +42,8 @@ def return_join_tables_cols(query):
     tables = list(set(tables))
 
     #Returns non join columns and list of tables that need to be returned in the query
-    return tables, columns
-
-
+    print "Return head:", d.head, "Projection:", d.getList
+    return tables, columns, d.getList
 
 
 def return_schema_A_or_B_dfs(tables, columns):
@@ -79,42 +78,22 @@ def return_schema_A_or_B_dfs(tables, columns):
     else:
         print "Columns being passed are not correct"
 
+def projected_data_output(unorderd_return_df):
+    return_projection_df = unorderd_return_df.reindex(columns=list(projection))
+    return return_projection_df
 
-#
-# def order_to_global_schema(unorderd_return_df):
-#
-#     #The following three lines describe the global schema
-#     ParticipantsGlobalSchema = ['_0', 'id', '_2', 'ptype', 'pname', 'sector_id']
-#     ParticipantDetailGlobalSchema = ['_0', 'Category', 'org', 'country', 'name', '_5']
-#     Events = ['Date']
-#
-#     #Set empty dataframes
-#     Participants = pandas.DataFrame(columns=ParticipantsGlobalSchema)
-#     ParticipantDetail = pandas.DataFrame(columns=ParticipantDetailGlobalSchema)
-#     Events = pandas.DataFrame(columns=Events)
-#
-#     #checks if the input df has columns in Participants Global Schema Return Table
-#     if len([val for val in unorderd_return_df.columns if val in ParticipantsGlobalSchema]) > 0:
-#         Participants = unorderd_return_df.reindex(columns=list(ParticipantsGlobalSchema))
-#     else:
-#         pass
-#
-#     # checks if the input df has columns in ParticipantDetail Global Schema Return Table
-#     if len([val for val in unorderd_return_df.columns if val in ParticipantDetailGlobalSchema]) > 0:
-#         ParticipantDetail = unorderd_return_df.reindex(columns=list(ParticipantDetailGlobalSchema))
-#     else:
-#         pass
-#
-#     return Participants,ParticipantDetail
-#
+
+return_tables, return_cols, projection = return_join_tables_cols(query8)
+unorderd_return_df = return_schema_A_or_B_dfs(return_tables, return_cols)
+print projected_data_output(unorderd_return_df)
+
+
+
+# print query8, "\n"
+# print "Tables:", return_tables, "Columns:", return_cols, "\n"
+# print unorderd_return_df.columns, "\n"
+
 
 #This is a test of the code above to show how it works!!!
 
-return_tables, return_cols  = return_join_tables_cols(query8)
-unorderd_return_df = return_schema_A_or_B_dfs(return_tables, return_cols)
-Participants, ParticipantDetail = order_to_global_schema(unorderd_return_df)
 
-print query8, "\n"
-print "Tables:", return_tables, "Columns:", return_cols, "\n"
-print unorderd_return_df.columns, "\n"
-print Participants, ParticipantDetail
