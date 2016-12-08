@@ -31,23 +31,23 @@ SectorName = DataFrame(graph.data("Match (s:Sector) Return ID(s) as sector_id, s
 SectorIs_A = DataFrame(graph.data("MATCH p=(s1:Sector)-[:`is-a`]->(s2:Sector) RETURN ID(s1) as sector_id, ID(s2) as sector_id2 LIMIT 25"))
 
 
-#Convert String Types to Strings
-#Relational Tables For Schema A
-Actor['pname'] = Actor['pname'].str.split(',')
-Actor['ptype'] = Actor['ptype'].str.split(',')
-From['country'] = From['country'].str.split(',')
-Affiliation['end'] = Affiliation['end'].str.split(',')
-Affiliation['org'] = Affiliation['org'].str.split(',')
-Affiliation['start'] = Affiliation['start'].str.split(',')
+# Convert String Types to Strings
+# Relational Tables For Schema A
+# Actor['pname'] = Actor['pname'].str.split(',')
+# Actor['ptype'] = Actor['ptype'].str.split(',')
+# From['country'] = From['country'].str.split(',')
+# Affiliation['end'] = Affiliation['end'].str.split(',')
+# Affiliation['org'] = Affiliation['org'].str.split(',')
+# Affiliation['start'] = Affiliation['start'].str.split(',')
+#
+# #Relational Tables For Schema B
+# AgentName['pname'] = AgentName['pname'].str.split(',')
+# AgentType['ptype'] = AgentType['ptype'].str.split(',')
+# Aliases['alias'] = Aliases['alias'].str.split(',')
+# SectorIs_A['name'] = SectorIs_A['name'].str.split(',')
 
-#Relational Tables For Schema B
-AgentName['pname'] = AgentName['pname'].str.split(',')
-AgentType['ptype'] = AgentType['ptype'].str.split(',')
-Aliases['alias'] = Aliases['alias'].str.split(',')
-SectorIs_A['name'] = SectorIs_A['name'].str.split(',')
 
-
-#Send all dataframes to a compressed HDF store in memory
+# Send all dataframes to a compressed HDF store in memory
 Actor.to_hdf( "Neo4JRelational.hdf", "Actor", complib='blosc')
 From.to_hdf( "Neo4JRelational.hdf", "From", complib='blosc')
 Affiliation.to_hdf( "Neo4JRelational.hdf", "Affiliation", complib='blosc')
