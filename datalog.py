@@ -242,8 +242,8 @@ class Datalog(DatalogBase):
                 s.attributes[x].isJoinPart = True
 
         if len(self.relations) > 1:
-            attribs = reduce((lambda x, y: x.getList + y.getList),self.relations)
-            all_p = reduce((lambda x, y: x.predicateToList + y.predicateToList),self.relations)
+            attribs = reduce((lambda x, y: x + y),[x.getList for x in self.relations])
+            all_p = reduce((lambda x, y: x + y),[x.predicateToList for x in self.relations])
         else:
             attribs = self.relations[0].getList
 
