@@ -216,7 +216,7 @@ class Datalog(DatalogBase):
                 predicates_all = [x.strip() for x in p if x.strip() <> '']
                 predicates = [x for x in predicates_all if re.split('\W+',x)[0].strip() in s.attributes]
                 # only keep predicates for current relation
-                s.predicateToList = predicates + alt_pred
+                # s.predicateToList = predicates + alt_pred
 
 
                 # populate predicate dictionary
@@ -227,7 +227,9 @@ class Datalog(DatalogBase):
                 for pred in alt_pred:
                     var = pred[pred.find('(') + 1:pred.find(',')].strip()
                     val = pred.replace(pred[pred.find('(') + 1:pred.find(',')+ 1], '').replace('( ', '(')
-                    s.predicate[s.attributes[var].index] = val
+                    if var in s.attributes:
+                        s.predicate[s.attributes[var].index] = val
+                        s.predicateToList.append('{0} = {1}'.format(var,val))
 
                 #  check for inline equality predicates and add to predicate dictionary
                 for x in s.attributes:
@@ -241,9 +243,13 @@ class Datalog(DatalogBase):
 
         if len(self.relations) > 1:
             attribs = reduce((lambda x, y: x.getList + y.getList),self.relations)
+            all_p = reduce((lambda x, y: x.predicateToList + y.predicateToList),self.relations)
         else:
             attribs = self.relations[0].getList
-        self.predicateToList = [x for x in predicates_all if not re.split('\W+', x)[0].strip() in attribs]
+
+        # get aggregation predicates
+        if len(all_p) > 0:
+            self.predicateToList = [x for x in all_p if not re.split('\W+', x)[0].strip() in attribs]
         pass
 
 
