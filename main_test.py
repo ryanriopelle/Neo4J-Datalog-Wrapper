@@ -11,8 +11,6 @@ for q in datalog_queries:
 
 print "Parser Test With Actual Datalog Input Queries"
 
-print datalog_queries.values
-
 for q in datalog_queries:
     inspect(datalog_queries)
 
