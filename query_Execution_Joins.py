@@ -110,11 +110,11 @@ def order_to_global_schema(unorderd_return_df):
 
 #This is a test of the code above to show how it works!!!
 
-return_tables, return_cols  = return_join_tables_cols(query8)
-unorderd_return_df = return_schema_A_or_B_dfs(return_tables, return_cols)
-Participants, ParticipantDetail = order_to_global_schema(unorderd_return_df)
-
-print query8, "\n"
-print "Tables:", return_tables, "Columns:", return_cols, "\n"
-print unorderd_return_df.columns, "\n"
-print Participants, ParticipantDetail
+# return_tables, return_cols  = return_join_tables_cols(query8)
+# unorderd_return_df = return_schema_A_or_B_dfs(return_tables, return_cols)
+# Participants, ParticipantDetail = order_to_global_schema(unorderd_return_df)
+#
+# print query8, "\n"
+# print "Tables:", return_tables, "Columns:", return_cols, "\n"
+# print unorderd_return_df.columns, "\n"
+# print Participants, ParticipantDetail
