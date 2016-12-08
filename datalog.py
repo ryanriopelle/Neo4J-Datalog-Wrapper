@@ -7,6 +7,7 @@ class DatalogBase(object):
         self.datalog = datalog
         self.attributes = dict()
         self.getList = list()
+        self.getIndexList = list()
 
     def __parse__(self, query):
         # this method will create a list of attributes and getList property
@@ -24,6 +25,8 @@ class DatalogBase(object):
             self.attributes[attribs[i]] = DatalogAttribute(attribs[i], i)
 
             self.getList.append(attribs[i])
+
+            self.getIndexList.append(i)
 
 class DatalogAttribute(DatalogBase):
 
@@ -109,6 +112,8 @@ class Datalog(DatalogBase):
 
         if len(o) > 0:
             self.distinct = True
+            body = body.replace(o[0], '')
+            o = o[0]
 
         return body
 
@@ -246,10 +251,11 @@ class Datalog(DatalogBase):
             all_p = reduce((lambda x, y: x + y),[x.predicateToList for x in self.relations])
         else:
             attribs = self.relations[0].getList
+            all_p = list()
 
         # get aggregation predicates
-        if len(all_p) > 0:
-            self.predicateToList = [x for x in all_p if not re.split('\W+', x)[0].strip() in attribs]
+        if len(predicates_all) > 0:
+            self.predicateToList = [y for y in predicates_all if re.split('\W+', y)[0].strip() not in [x for x in attribs] and  unicode(re.split('\W+', y)[0], 'utf-8').isnumeric() ==False ]
         pass
 
 
