@@ -84,7 +84,7 @@ def projected_data_output(unorderd_return_df):
 
 
 def execute_query(query):
-    return_tables, return_cols, projection = return_join_tables_cols(query8)
+    return_tables, return_cols, projection = return_join_tables_cols(query)
     data = return_schema_A_or_B_dfs(return_tables, return_cols)
     return data
 

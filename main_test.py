@@ -5,9 +5,9 @@ datalog_queries = [query5, query6, query7, query8, query9, query10]
 
 print "Parser Test With Actual Datalog Input Queries"
 
-for q in datalog_queries:
-    print "For Query Below, Inspect:", q, "\n"
-    inspect(q)
+# for q in datalog_queries:
+#     print "For Query Below, Inspect:", q, "\n"
+#     inspect(q)
 
 print "Test Query Execution Engine: (uses Datalog Parser as Base Classes)"
 

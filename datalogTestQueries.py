@@ -54,12 +54,6 @@ affiliation( id, org, _, _ ),
 actor( id, _, _, aliaslist )
 """
 
-
-
-
-
-
-
 query6 = """
 participantdetails(_, _, org, country, aliaslist, _):-
 from( id, country ),
