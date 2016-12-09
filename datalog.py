@@ -203,7 +203,7 @@ class Datalog(DatalogBase):
         predicates = list()
 
         for s in self.relations:
-            # get functional predicates that don't use variable assignment
+            # get functional predicates that don't use variable assignment, predicates that use functions with 2 parameters
             alt_pred = re.findall('([A-Z0-9]+[(].+?,.+?[)])', rel_pred)
 
             # remove alt_pred from predicate string
@@ -283,7 +283,6 @@ def inspect(query):
     print 'aggregations:', d.aggregations
     print 'having clause:', d.predicateToList
     print 'order by:', d.orderBy
-    # this property is an int
     print 'limit:', d.limit
     print 'distinct:', d.distinct
     print '\n'
