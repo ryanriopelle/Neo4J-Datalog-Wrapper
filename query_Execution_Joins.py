@@ -87,7 +87,7 @@ def execute_query(query):
 
     #This is the overall query engine
     return_tables, return_cols, projection = return_join_tables_cols(query)
-    # print "Tables:", return_tables, "\n" "Columns:", return_cols, "\n", "Required Projection:", projection
+    print "Tables:", return_tables, "\n" "Columns:", return_cols, "\n", "Required Projection:", projection
     data = return_schema_A_or_B_dfs(return_tables, return_cols)
     return data
 

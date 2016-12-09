@@ -27,6 +27,7 @@ def test_one():
     # i am using your execute function to run the query above
     datalog_result = final_query(datalog_query)
 
+
     # this is what i would expect your parser to ask the database
     neo_query = """
     Match (a: Actor {Name: 'Ariel Sharon'})-[aff:Affiliation]->(r)
@@ -90,4 +91,4 @@ def test_three():
     return assert_frame_equal(neo_df, datalog_result)
 
 
-test_one()
+test_one(), test_two(), test_three()

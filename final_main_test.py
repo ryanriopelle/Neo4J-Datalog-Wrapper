@@ -1,7 +1,8 @@
 from query_Execution_Joins import *
-from final_neo4j_test import *
 from py2neo import authenticate, Graph
 
+authenticate("54.85.112.231:7474", "neo4j", "LEbKqX3q")
+graph = Graph("bolt://54.85.112.231/db/data/")
 
 def final_query(datalog_query):
     if datalog_query == """
