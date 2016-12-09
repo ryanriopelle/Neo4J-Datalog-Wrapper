@@ -19,8 +19,11 @@ def test_one():
     """Return all of the associations of Ariel Sharon """
 
     # this is the query that your wrapper should parse and return from
-    datalog_query = """q(organization) :-
-    participantdetail(_, _, organization, _, 'Ariel Sharon', _),
+    datalog_query = """
+    q(organization) :-
+    actor(id, _, pname, _),
+    affiliation(id, organization, _, _),
+    pname = 'Ariel Sharon'
     """
 
     # i am using your execute function to run the query above
@@ -40,13 +43,17 @@ def test_one():
     # wrapper and what I'd expect the result to be
     assert_frame_equal(neo_df, datalog_result)
 
+
 def test_two():
-    """Report the actor with highest number of affiliations."""
-    datalog_query = """counts(name, cnt) :-
-    participantdetail(_, _, organization, _, name, _),
-    GROUP_BY([name], cnt = count(organization)),
-    SORT_BY(cnt, 'DESC'),
-    LIMIT(1)"""
+    """Report the actor with highest number of affiliations, and how many affiliations they have."""
+    datalog_query = """
+    q(name, cnt) :-
+    actor(id, _, name, _),
+    affiliation(id, organization, _, _),
+    GROUP_BY([name], cnt = COUNT(organization)),
+    SORT_BY([cnt], 'DESC'),
+    LIMIT(1)
+    """
 
     datalog_result = execute_query(datalog_query)
 
@@ -63,11 +70,14 @@ def test_two():
 
     assert_frame_equal(neo_df, datalog_result)
 
+
 def test_three():
     """Return the people associated for organization X.  Example X = 'Taliban'"""
-    datalog_query = """A(name) :-
-    participantdetail(_, _, organization, _, name, _),
-    organization = 'Taliban' """
+    datalog_query = """
+    q(name) :-
+    actor(id, _, name, _),
+    affiliation(id, 'Taliban', _, _)
+    """
 
     datalog_result = execute_query(datalog_query)
 
