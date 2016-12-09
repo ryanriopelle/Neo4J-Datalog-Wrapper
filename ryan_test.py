@@ -31,10 +31,8 @@ while True:
         print "new_dict", new_dict
 
         #get another dataframe with matching keys
-        related_key = list(new_dict.keys())[list(new_dict.values()).index(dict_df[i])]
-        print "Related Key:", related_key, "\n"
-
-
+        # related_key = list(new_dict.keys())[list(new_dict.values()).index(dict_df[i])]
+        # print "Related Key:", related_key, "\n"
 
         dict_df.pop(i)
         if len(dict_df)<=0:

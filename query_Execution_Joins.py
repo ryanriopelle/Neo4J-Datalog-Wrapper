@@ -58,12 +58,12 @@ def return_schema_A_or_B_dfs(tables, columns):
     schemaB_col = schema_b.columns
 
     # Checks how many tables intersect
-    tableA_intersect = [val for val in return_tables if val in schemaA_tables]
-    tableB_intersect = [val for val in return_tables if val in schemaB_tables]
+    tableA_intersect = [val for val in tables if val in schemaA_tables]
+    tableB_intersect = [val for val in tables if val in schemaB_tables]
 
     # Checks how many columns intersect
-    colA_intersect = [val for val in return_cols if val in schemaA_col]
-    colB_intersect = [val for val in return_cols if val in schemaB_col]
+    colA_intersect = [val for val in columns if val in schemaA_col]
+    colB_intersect = [val for val in columns if val in schemaB_col]
 
     #Decides which schema and creates pandas dataframe of values that need to be returned
     if len(tableA_intersect) > len(tableB_intersect):
@@ -83,15 +83,10 @@ def projected_data_output(unorderd_return_df):
     return return_projection_df
 
 
-return_tables, return_cols, projection = return_join_tables_cols(query8)
-unorderd_return_df = return_schema_A_or_B_dfs(return_tables, return_cols)
-print projected_data_output(unorderd_return_df)
-
-
-
-# print query8, "\n"
-# print "Tables:", return_tables, "Columns:", return_cols, "\n"
-# print unorderd_return_df.columns, "\n"
+def execute_query(query):
+    return_tables, return_cols, projection = return_join_tables_cols(query8)
+    data = return_schema_A_or_B_dfs(return_tables, return_cols)
+    return data
 
 
 #This is a test of the code above to show how it works!!!
