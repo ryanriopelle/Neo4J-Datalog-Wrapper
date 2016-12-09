@@ -1,5 +1,5 @@
-from py2neo import authenticate, Graph
 from pandas import *
+from py2neo import authenticate, Graph
 
 # from neo4j.v1 import GraphDatabase, basic_auth
 # driver = GraphDatabase.driver("bolt://54.85.112.231:7687", auth=basic_auth("neo4j", "LEbKqX3q"))
@@ -29,6 +29,14 @@ Aliases = DataFrame(graph.data("Match (a_n:AgentName)-[:AgentAlias]-(a:Aliases) 
 AgentSector = DataFrame(graph.data("Match (a:AgentName)-[:Sector]-(s:Sector) Return ID(a) as id, ID(s) as sector_id"))
 SectorName = DataFrame(graph.data("Match (s:Sector) Return ID(s) as sector_id, s.Name as name"))
 SectorIs_A = DataFrame(graph.data("MATCH p=(s1:Sector)-[:`is-a`]->(s2:Sector) RETURN ID(s1) as sector_id, ID(s2) as sector_id2 LIMIT 25"))
+
+def where(a):
+
+    mystring = ''.join[a]
+    return mystring
+
+"Match ({1}:AgentName) {0} Return ID(a) as id, a.Name as pname".format(where(a), "a")
+
 
 
 # Convert String Types to Strings

@@ -215,7 +215,6 @@ class Datalog(DatalogBase):
             # create predicate dictionary
             s.predicate = dict()
             s.predicateToList = list()
-            predicates_all= list()
 
 
             if len(p) > 0:
@@ -259,32 +258,4 @@ class Datalog(DatalogBase):
             self.predicateToList = [y for y in predicates_all if re.split('\W+', y)[0].strip() not in [x for x in attribs] and  unicode(re.split('\W+', y)[0], 'utf-8').isnumeric() ==False ]
         pass
 
-
-
-def inspect(query):
-    # use to inspect object properties
-    d = Datalog(query)
-    print 'query:', query
-    print 'head:',d.head
-    print 'name:',d.name
-    print 'projection:', d.getList
-
-    print 'Join keys:',d.joinKeys
-    for x in d.relations:
-        print x.name
-        print 'predicate:', x.predicateToList
-        for a in x.attributes:
-            print '\t', x.attributes[a].name, '\t', \
-                x.attributes[a].index, '\t',\
-                x.attributes[a].isJoinPart, '\t',\
-                x.predicate[x.attributes[a].index] if x.attributes[a].index in x.predicate else ''
-    print 'group by:', d.groupBy
-    print 'grouping columns:', d.groupByColumns
-    print 'aggregations:', d.aggregations
-    print 'having clause:', d.predicateToList
-    print 'order by:', d.orderBy
-    # this property is an int
-    print 'limit:', d.limit
-    print 'distinct:', d.distinct
-    print '\n'
 

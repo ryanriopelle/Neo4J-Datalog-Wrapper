@@ -73,4 +73,17 @@ aliases( id, aliaslist ),
 agentsector( id, sector_id, pname),
 sectorname( sector_id, sector_name1 )"""
 
+query9 = """
+participantdetails(_, _, pname, _, ptype, _):-
+agentname(id, pname),
+agenttype(id, ptype),
+aliases( id, aliaslist )
+"""
 
+query10 = """
+participantdetails(_, _, pname, _, ptype, sector_id):-
+agentname(id, 'john'),
+agenttype(id, ptype),
+aliases( id, aliaslist ),
+agentsector( id, sector_id, pname),
+sectorname( sector_id, 'blah' )"""
